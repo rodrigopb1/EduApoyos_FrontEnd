@@ -67,11 +67,11 @@ export class AuthService {
 
   rutaInicial(): string {
     if (this.tieneRol('Asesor')) {
-      return '/';
+      return '/inicio';
     }
 
     if (this.tieneRol('Estudiante')) {
-      return '/';
+      return '/estudiante/solicitudes';
     }
 
     return '/acceso';

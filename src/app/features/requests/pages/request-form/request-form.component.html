@@ -1,0 +1,112 @@
+<header class="page-header">
+  <div>
+    <p class="eyebrow">Solicitud de apoyo</p>
+    <h1>Nueva solicitud</h1>
+    <p>Registre el tipo de apoyo, el monto y una justificación clara.</p>
+  </div>
+</header>
+
+<section class="card form-card">
+  @if (exito()) {
+    <div class="alert alert--success" role="status" aria-live="polite">
+      {{ exito() }}
+    </div>
+  }
+
+  @if (error()) {
+    <div class="alert alert--error" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  <form
+    class="form-grid"
+    [formGroup]="form"
+    (ngSubmit)="guardar()"
+    novalidate
+  >
+    <label class="field">
+      <span>Tipo de apoyo</span>
+
+      <select formControlName="tipoApoyo">
+        @for (tipo of tiposApoyo; track tipo.value) {
+          <option [ngValue]="tipo.value">
+            {{ tipo.label }}
+          </option>
+        }
+      </select>
+
+      @if (campoInvalido(form.controls.tipoApoyo)) {
+        <small>
+          {{ mensajeCampo(form.controls.tipoApoyo, 'El tipo de apoyo') }}
+        </small>
+      }
+    </label>
+
+    <label class="field">
+      <span>Monto solicitado</span>
+
+      <input
+        type="number"
+        min="1"
+        max="500000000"
+        formControlName="montoSolicitado"
+      />
+
+      @if (campoInvalido(form.controls.montoSolicitado)) {
+        <small>
+          {{
+            mensajeCampo(
+              form.controls.montoSolicitado,
+              'El monto solicitado'
+            )
+          }}
+        </small>
+      }
+    </label>
+
+    <label class="field field--full">
+      <span>Justificación</span>
+
+      <textarea
+        rows="8"
+        maxlength="2000"
+        formControlName="justificacion"
+        placeholder="Explique brevemente por qué necesita el apoyo"
+      ></textarea>
+
+      <em>
+        {{ form.controls.justificacion.value.length }} de 2000 caracteres
+      </em>
+
+      @if (campoInvalido(form.controls.justificacion)) {
+        <small>
+          {{
+            mensajeCampo(
+              form.controls.justificacion,
+              'La justificación'
+            )
+          }}
+        </small>
+      }
+    </label>
+
+    <div class="form-actions field--full">
+      <a
+        class="button button--secondary"
+        routerLink="/estudiante/solicitudes"
+        [attr.aria-disabled]="guardando()"
+      >
+        Cancelar
+      </a>
+
+      <button
+        class="button button--primary"
+        type="submit"
+        [disabled]="guardando() || form.invalid"
+      >
+        {{ guardando() ? 'Enviando…' : 'Enviar solicitud' }}
+      </button>
+    </div>
+  </form>
+</section>

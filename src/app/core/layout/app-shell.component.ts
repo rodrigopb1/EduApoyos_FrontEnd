@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
+import { ROLES } from '../auth/auth.models';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app-shell.component.html',
   styleUrl: './app-shell.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,6 +15,8 @@ export class AppShellComponent {
   private readonly router = inject(Router);
 
   readonly sesion = this.authService.sesion;
+  readonly esAsesor = computed(() => this.authService.tieneRol(ROLES.asesor));
+  readonly esEstudiante = computed(() => this.authService.tieneRol(ROLES.estudiante));
   readonly iniciales = computed(() => {
     const nombre = this.sesion()?.nombreCompleto ?? '';
     return nombre
