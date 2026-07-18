@@ -1,0 +1,61 @@
+<header class="page-header">
+  <p class="eyebrow">Expediente de solicitud</p>
+  <h1>Detalle de la solicitud</h1>
+  <p>Consulte la información registrada y el historial de cambios.</p>
+</header>
+
+@if (error()) {
+  <div class="alert alert--error" role="alert">{{ error() }}</div>
+}
+
+@if (cargando()) {
+  <section class="card empty-state">Cargando solicitud…</section>
+}
+
+@if (!cargando() && solicitud(); as item) {
+  <section class="card detail-card">
+    <div class="detail-card__title">
+      <div>
+        <p class="eyebrow">{{ nombreTipoApoyo(item.tipoApoyo) }}</p>
+        <h2>{{ item.montoSolicitado | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</h2>
+      </div>
+      <span [class]="claseEstadoSolicitud(item.estado)">
+        {{ nombreEstadoSolicitud(item.estado) }}
+      </span>
+    </div>
+
+    <dl class="detail-grid">
+      <div><dt>Estudiante</dt><dd>{{ item.nombreEstudiante }}</dd></div>
+      <div><dt>Documento</dt><dd>{{ item.numeroDocumento }}</dd></div>
+      <div><dt>Programa académico</dt><dd>{{ item.programaAcademico }}</dd></div>
+      <div><dt>Semestre</dt><dd>{{ item.semestre }}</dd></div>
+      <div><dt>Fecha de creación</dt><dd>{{ item.fechaCreacion | date: 'dd/MM/yyyy, h:mm a' }}</dd></div>
+      <div><dt>Identificador</dt><dd class="mono">{{ item.id }}</dd></div>
+    </dl>
+
+    <div class="justification">
+      <h3>Justificación</h3>
+      <p>{{ item.justificacion }}</p>
+    </div>
+  </section>
+
+  <section class="card history-card">
+    <h2>Historial de estados</h2>
+    @if (item.historial.length === 0) {
+      <div class="empty-state">La solicitud aún no tiene cambios de estado.</div>
+    } @else {
+      <ol class="timeline">
+        @for (cambio of item.historial; track cambio.id) {
+          <li>
+            <span class="timeline__dot" aria-hidden="true"></span>
+            <div>
+              <strong>{{ nombreEstadoSolicitud(cambio.estadoAnterior) }} → {{ nombreEstadoSolicitud(cambio.estadoNuevo) }}</strong>
+              <p>{{ cambio.observacion }}</p>
+              <small>{{ cambio.fechaCambio | date: 'dd/MM/yyyy, h:mm a' }}</small>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+  </section>
+}

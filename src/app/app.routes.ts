@@ -38,6 +38,15 @@ export const routes: Routes = [
             (m) => m.RequestFormComponent,
           ),
       },
+      {
+        path: 'solicitudes/:id',
+        canActivate: [roleGuard],
+        data: { roles: [ROLES.asesor, ROLES.estudiante] },
+        loadComponent: () =>
+          import('./features/requests/pages/request-detail/request-detail.component').then(
+            (m) => m.RequestDetailComponent,
+          ),
+      },
       { path: '', pathMatch: 'full', redirectTo: 'inicio' },
       {
         path: 'inicio',
