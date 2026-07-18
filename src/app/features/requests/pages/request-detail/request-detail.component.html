@@ -1,61 +1,123 @@
-<header class="page-header">
-  <p class="eyebrow">Expediente de solicitud</p>
-  <h1>Detalle de la solicitud</h1>
-  <p>Consulte la información registrada y el historial de cambios.</p>
+<header class="page-header page-header--actions">
+  <div>
+    <p class="eyebrow">Expediente de solicitud</p>
+    <h1>Detalle de la solicitud</h1>
+    <p>Consulte la información registrada y el historial de cambios.</p>
+  </div>
 </header>
 
 @if (error()) {
   <div class="alert alert--error" role="alert">{{ error() }}</div>
 }
+@if (mensaje()) {
+  <div class="alert alert--success" role="status">{{ mensaje() }}</div>
+}
 
 @if (cargando()) {
   <section class="card empty-state">Cargando solicitud…</section>
-}
+} @else {
+  @if (solicitud(); as item) {
+    <div class="detail-layout">
+      <section class="card detail-card">
+        <div class="detail-card__title">
+          <div>
+            <p class="eyebrow">{{ nombreTipoApoyo(item.tipoApoyo) }}</p>
+            <h2>{{ item.montoSolicitado | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</h2>
+          </div>
+          <span [class]="claseEstadoSolicitud(item.estado)">
+            {{ nombreEstadoSolicitud(item.estado) }}
+          </span>
+        </div>
 
-@if (!cargando() && solicitud(); as item) {
-  <section class="card detail-card">
-    <div class="detail-card__title">
-      <div>
-        <p class="eyebrow">{{ nombreTipoApoyo(item.tipoApoyo) }}</p>
-        <h2>{{ item.montoSolicitado | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</h2>
-      </div>
-      <span [class]="claseEstadoSolicitud(item.estado)">
-        {{ nombreEstadoSolicitud(item.estado) }}
-      </span>
+        <dl class="detail-grid">
+          <div>
+            <dt>Estudiante</dt>
+            <dd>{{ item.nombreEstudiante }}</dd>
+          </div>
+          <div>
+            <dt>Documento</dt>
+            <dd>{{ item.numeroDocumento }}</dd>
+          </div>
+          <div>
+            <dt>Programa académico</dt>
+            <dd>{{ item.programaAcademico }}</dd>
+          </div>
+          <div>
+            <dt>Semestre</dt>
+            <dd>{{ item.semestre }}</dd>
+          </div>
+          <div>
+            <dt>Fecha de creación</dt>
+            <dd>{{ item.fechaCreacion | date: 'dd/MM/yyyy, h:mm a' }}</dd>
+          </div>
+          <div>
+            <dt>Identificador</dt>
+            <dd class="mono">{{ item.id }}</dd>
+          </div>
+        </dl>
+
+        <div class="justification">
+          <h3>Justificación</h3>
+          <p>{{ item.justificacion }}</p>
+        </div>
+      </section>
+
+      @if (esAsesor && estadosDisponibles().length > 0) {
+        <aside class="card state-card">
+          <h2>Actualizar estado</h2>
+          <p>Registre una observación que justifique la decisión.</p>
+
+          <form [formGroup]="estadoForm" (ngSubmit)="cambiarEstado()" novalidate>
+            <label class="field">
+              <span>Nuevo estado</span>
+              <select formControlName="estado">
+                @for (estado of estadosDisponibles(); track estado.value) {
+                  <option [value]="estado.value">{{ estado.label }}</option>
+                }
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Observación</span>
+              <textarea rows="5" formControlName="observacion"></textarea>
+              @if (campoInvalido(estadoForm.controls.observacion)) {
+                <small>{{ mensajeCampo(estadoForm.controls.observacion, 'La observación') }}</small>
+              }
+            </label>
+            <br/>
+            <button
+              class="button button--primary button--block"
+              type="submit"
+              [disabled]="guardandoEstado()"
+            >
+              {{ guardandoEstado() ? 'Actualizando…' : 'Actualizar estado' }}
+            </button>
+          </form>
+        </aside>
+      }
     </div>
 
-    <dl class="detail-grid">
-      <div><dt>Estudiante</dt><dd>{{ item.nombreEstudiante }}</dd></div>
-      <div><dt>Documento</dt><dd>{{ item.numeroDocumento }}</dd></div>
-      <div><dt>Programa académico</dt><dd>{{ item.programaAcademico }}</dd></div>
-      <div><dt>Semestre</dt><dd>{{ item.semestre }}</dd></div>
-      <div><dt>Fecha de creación</dt><dd>{{ item.fechaCreacion | date: 'dd/MM/yyyy, h:mm a' }}</dd></div>
-      <div><dt>Identificador</dt><dd class="mono">{{ item.id }}</dd></div>
-    </dl>
-
-    <div class="justification">
-      <h3>Justificación</h3>
-      <p>{{ item.justificacion }}</p>
-    </div>
-  </section>
-
-  <section class="card history-card">
-    <h2>Historial de estados</h2>
-    @if (item.historial.length === 0) {
-      <div class="empty-state">La solicitud aún no tiene cambios de estado.</div>
-    } @else {
-      <ol class="timeline">
-        @for (cambio of item.historial; track cambio.id) {
-          <li>
-            <span class="timeline__dot" aria-hidden="true"></span>
-            <div>
-              <strong>{{ nombreEstadoSolicitud(cambio.estadoAnterior) }} → {{ nombreEstadoSolicitud(cambio.estadoNuevo) }}</strong>
-              <p>{{ cambio.observacion }}</p>
-              <small>{{ cambio.fechaCambio | date: 'dd/MM/yyyy, h:mm a' }}</small>
-            </div>
-          </li>
-        }
-      </ol>
-    }
-  </section>
+    <section class="card history-card">
+      <h2>Historial de estados</h2>
+      @if (item.historial.length === 0) {
+        <div class="empty-state">La solicitud aún no tiene cambios de estado.</div>
+      } @else {
+        <ol class="timeline">
+          @for (cambio of item.historial; track cambio.id) {
+            <li>
+              <span class="timeline__dot" aria-hidden="true"></span>
+              <div>
+                <strong>
+                  {{ nombreEstadoSolicitud(cambio.estadoAnterior) }} →
+                  {{ nombreEstadoSolicitud(cambio.estadoNuevo) }}
+                </strong>
+                <p>{{ cambio.observacion }}</p>
+                <small>{{ cambio.fechaCambio | date: 'dd/MM/yyyy, h:mm a' }}</small>
+              </div>
+            </li>
+          }
+        </ol>
+      }
+    </section>
+  }
 }

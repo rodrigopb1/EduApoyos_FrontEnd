@@ -67,7 +67,7 @@ export class AuthService {
 
   rutaInicial(): string {
     if (this.tieneRol('Asesor')) {
-      return '/inicio';
+      return '/asesor/solicitudes';
     }
 
     if (this.tieneRol('Estudiante')) {

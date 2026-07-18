@@ -21,6 +21,15 @@ export const routes: Routes = [
     canActivate: [authGuard],
     children: [
       {
+        path: 'asesor/solicitudes',
+        canActivate: [roleGuard],
+        data: { roles: [ROLES.asesor] },
+        loadComponent: () =>
+          import(
+            './features/requests/pages/advisor-request-list/advisor-request-list.component'
+          ).then((m) => m.AdvisorRequestListComponent),
+      },
+      {
         path: 'estudiante/solicitudes',
         canActivate: [roleGuard],
         data: { roles: [ROLES.estudiante] },
@@ -47,11 +56,11 @@ export const routes: Routes = [
             (m) => m.RequestDetailComponent,
           ),
       },
-      { path: '', pathMatch: 'full', redirectTo: 'inicio' },
       {
         path: 'inicio',
         loadComponent: () => import('./core/layout/start.component').then((m) => m.StartComponent),
       },
+      { path: '', pathMatch: 'full', redirectTo: 'inicio' },
     ],
   },
   { path: '**', redirectTo: 'inicio' },

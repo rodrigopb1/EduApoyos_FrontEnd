@@ -1,6 +1,6 @@
 <div class="layout">
   <aside class="sidebar" aria-label="Navegación principal">
-    <a class="brand" [routerLink]="esAsesor() ? '/inicio' : '/estudiante/solicitudes'">
+    <a class="brand" [routerLink]="esAsesor() ? '/asesor/solicitudes' : '/estudiante/solicitudes'">
       <span class="brand__mark">EA</span>
       <span>
         <strong>EduApoyos</strong>
@@ -11,12 +11,15 @@
     <nav class="nav">
       @if (esAsesor()) {
         <span class="nav__label">Gestión</span>
-        <a routerLink="/inicio" routerLinkActive="is-active">Inicio</a>
+        <a routerLink="/asesor/solicitudes" routerLinkActive="is-active">Solicitudes</a>
       }
+
       @if (esEstudiante()) {
         <span class="nav__label">Mi portal</span>
         <a routerLink="/estudiante/solicitudes" routerLinkActive="is-active">Mis solicitudes</a>
-        <a routerLink="/estudiante/solicitudes/nueva" routerLinkActive="is-active">Nueva solicitud</a>
+        <a routerLink="/estudiante/solicitudes/nueva" routerLinkActive="is-active"
+          >Nueva solicitud</a
+        >
       }
     </nav>
 
@@ -38,6 +41,9 @@
       </div>
       <span class="topbar__role">{{ sesion()?.roles?.join(', ') }}</span>
     </header>
-    <section class="page-container"><router-outlet /></section>
+
+    <section class="page-container">
+      <router-outlet />
+    </section>
   </main>
 </div>

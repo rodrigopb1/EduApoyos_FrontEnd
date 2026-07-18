@@ -1,0 +1,175 @@
+<header class="page-header">
+  <div>
+    <p class="eyebrow">Seguimiento institucional</p>
+    <h1>Solicitudes</h1>
+    <p>Consulte el estado de los apoyos y gestione cada caso.</p>
+  </div>
+</header>
+
+<section class="card">
+  <form class="filters" [formGroup]="filtros">
+    <label class="field">
+      <span>Estado</span>
+
+      <select formControlName="estado">
+        <option [ngValue]="null">Todos</option>
+
+        @for (estado of estados; track estado.value) {
+          <option [ngValue]="estado.value">
+            {{ estado.label }}
+          </option>
+        }
+      </select>
+    </label>
+
+    <label class="field">
+      <span>Tipo de apoyo</span>
+
+      <select formControlName="tipoApoyo">
+        <option [ngValue]="null">Todos</option>
+
+        @for (tipo of tiposApoyo; track tipo.value) {
+          <option [ngValue]="tipo.value">
+            {{ tipo.label }}
+          </option>
+        }
+      </select>
+    </label>
+
+    <div class="filter-actions">
+      <button
+        class="button button--secondary"
+        type="button"
+        (click)="limpiar()"
+        [disabled]="cargando()"
+      >
+        Limpiar
+      </button>
+    </div>
+  </form>
+
+  @if (error()) {
+    <div class="alert alert--error" role="alert">
+      {{ error() }}
+    </div>
+  }
+
+  @if (cargando()) {
+    <div class="empty-state" aria-live="polite">
+      Cargando solicitudes…
+    </div>
+  } @else if (!resultado()?.elementos?.length) {
+    <div class="empty-state">
+      No hay solicitudes para los filtros seleccionados.
+    </div>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Apoyo</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th class="table-actions">Acción</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @for (
+            solicitud of resultado()!.elementos;
+            track solicitud.id
+          ) {
+            <tr>
+              <td>
+                <strong>
+                  {{ solicitud.nombreEstudiante }}
+                </strong>
+              </td>
+
+              <td>
+                {{ nombreTipoApoyo(solicitud.tipoApoyo) }}
+              </td>
+
+              <td>
+                {{
+                  solicitud.montoSolicitado
+                    | currency: 'COP' : 'symbol-narrow' : '1.0-0'
+                }}
+              </td>
+
+              <td>
+                {{
+                  solicitud.fechaCreacion
+                    | date: 'dd/MM/yyyy'
+                }}
+              </td>
+
+              <td>
+                <span
+                  [class]="
+                    claseEstadoSolicitud(solicitud.estado)
+                  "
+                >
+                  {{
+                    nombreEstadoSolicitud(
+                      solicitud.estado
+                    )
+                  }}
+                </span>
+              </td>
+
+              <td class="table-actions">
+                <a
+                  [routerLink]="[
+                    '/solicitudes',
+                    solicitud.id
+                  ]"
+                >
+                  Ver detalle
+                </a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <nav
+      class="pagination"
+      aria-label="Paginación de solicitudes"
+    >
+      <button
+        type="button"
+        (click)="
+          cambiarPagina(resultado()!.pagina - 1)
+        "
+        [disabled]="
+          cargando() || resultado()!.pagina <= 1
+        "
+      >
+        Anterior
+      </button>
+
+      <span>
+        Página {{ resultado()!.pagina }} de
+        {{ resultado()!.totalPaginas }}
+      </span>
+
+      <button
+        type="button"
+        (click)="
+          cambiarPagina(resultado()!.pagina + 1)
+        "
+        [disabled]="
+          cargando() ||
+          resultado()!.pagina >=
+            resultado()!.totalPaginas
+        "
+      >
+        Siguiente
+      </button>
+    </nav>
+  }
+</section>
