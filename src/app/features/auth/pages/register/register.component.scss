@@ -1,0 +1,5 @@
+@use '../shared-auth';
+
+.auth-card {
+  width: min(100%, 680px);
+}

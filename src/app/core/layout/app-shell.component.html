@@ -1,0 +1,37 @@
+<div class="layout">
+  <aside class="sidebar" aria-label="Navegación principal">
+    <a class="brand" routerLink="/">
+      <span class="brand__mark">EA</span>
+      <span>
+        <strong>EduApoyos</strong>
+        <small>Gestión educativa</small>
+      </span>
+    </a>
+
+    <div class="sidebar__user">
+      <span class="avatar" aria-hidden="true">{{ iniciales() }}</span>
+      <div>
+        <strong>{{ sesion()?.nombreCompleto }}</strong>
+        <small>{{ sesion()?.correoElectronico }}</small>
+      </div>
+      <button type="button" class="link-button" (click)="cerrarSesion()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <header class="topbar">
+      <div>
+        <span class="topbar__eyebrow">Plataforma institucional</span>
+        <strong>EduApoyos</strong>
+      </div>
+      <span class="topbar__role">{{ sesion()?.roles?.join(', ') }}</span>
+    </header>
+    <section class="page-container">
+      <div class="card">
+        <h1>Sesión iniciada</h1>
+        <p>El acceso protegido mediante JWT está funcionando correctamente.</p>
+      </div>
+      <router-outlet />
+    </section>
+  </main>
+</div>
