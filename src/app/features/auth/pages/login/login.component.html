@@ -1,0 +1,76 @@
+<div class="auth-page">
+  <section class="auth-copy">
+    <a class="brand" routerLink="/acceso"><span>EA</span> EduApoyos</a>
+    <div>
+      <p class="eyebrow">Gestión de apoyos educativos</p>
+      <h1>Seguimiento claro para estudiantes y asesores.</h1>
+      <p>
+        Consulte solicitudes, gestione estados y mantenga un historial verificable desde una sola
+        plataforma.
+      </p>
+    </div>
+  </section>
+
+  <main class="auth-panel">
+    <form class="auth-card" [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+      <header>
+        <span class="mobile-brand">EduApoyos</span>
+        <h2>Iniciar sesión</h2>
+        <p>Ingrese con las credenciales asignadas a su perfil.</p>
+      </header>
+
+      @if (registroExitoso) {
+        <div class="alert alert--success" role="status">
+          La cuenta fue creada correctamente. Ya puede iniciar sesión.
+        </div>
+      }
+      @if (sesionExpirada) {
+        <div class="alert alert--warning" role="status">La sesión expiró. Ingrese nuevamente.</div>
+      }
+      @if (error()) {
+        <div class="alert alert--error" role="alert">{{ error() }}</div>
+      }
+
+      <label class="field">
+        <span>Correo electrónico</span>
+        <input
+          type="email"
+          formControlName="correoElectronico"
+          autocomplete="username"
+          placeholder="nombre@institucion.edu"
+        />
+        @if (campoInvalido(form.controls.correoElectronico)) {
+          <small>{{
+            mensajeCampo(form.controls.correoElectronico, 'El correo electrónico')
+          }}</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Contraseña</span>
+        <input
+          type="password"
+          formControlName="contrasena"
+          autocomplete="current-password"
+          placeholder="Ingrese su contraseña"
+        />
+        @if (campoInvalido(form.controls.contrasena)) {
+          <small>{{ mensajeCampo(form.controls.contrasena, 'La contraseña') }}</small>
+        }
+      </label>
+
+      <label class="check">
+        <input type="checkbox" formControlName="persistente" />
+        <span>Mantener la sesión en este equipo</span>
+      </label>
+
+      <button class="button button--primary button--block" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Validando…' : 'Ingresar' }}
+      </button>
+
+      <p class="auth-card__footer">
+        ¿Aún no tiene cuenta? <a routerLink="/registro">Registrar estudiante</a>
+      </p>
+    </form>
+  </main>
+</div>
