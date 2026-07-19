@@ -25,38 +25,62 @@ export class RegisterComponent {
   readonly campoInvalido = campoInvalido;
   readonly mensajeCampo = mensajeCampo;
 
-  readonly form = this.fb.nonNullable.group({
-    nombreCompleto: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]],
-    correoElectronico: ['', [Validators.required, Validators.email]],
-    contrasena: [
-      '',
-      [
-        Validators.required,
-        Validators.minLength(8),
-        Validators.maxLength(100),
-        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/),
-      ],
+ readonly form = this.fb.nonNullable.group({
+  nombreCompleto: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(150)]],
+  correoElectronico: ['', [Validators.required, Validators.email]],
+  contrasena: [
+    '',
+    [
+      Validators.required,
+      Validators.minLength(8),
+      Validators.maxLength(100),
+      Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).+$/),
     ],
-    numeroDocumento: ['', [Validators.required, Validators.maxLength(30)]],
-    tipoDocumento: [1, Validators.required],
-    programaAcademico: ['', [Validators.required, Validators.maxLength(150)]],
-    semestre: [1, [Validators.required, Validators.min(1), Validators.max(10)]],
+  ],
+  numeroDocumento: [
+    '',
+    [
+      Validators.required,
+      Validators.pattern(/^[0-9]+$/),
+      Validators.minLength(6),
+      Validators.maxLength(15),
+    ],
+  ],
+  tipoDocumento: [1, Validators.required],
+  programaAcademico: ['', [Validators.required, Validators.maxLength(150)]],
+  semestre: [1, [Validators.required, Validators.min(1), Validators.max(10)]],
+});
+
+soloNumeros(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const valorLimpio = input.value.replace(/[^0-9]/g, '');
+
+  input.value = valorLimpio;
+
+  this.form.controls.numeroDocumento.setValue(valorLimpio, {
+    emitEvent: false,
   });
+}
 
-  enviar(): void {
-    if (this.form.invalid || this.enviando()) {
-      this.form.markAllAsTouched();
-      return;
-    }
+enviar(): void {
+  if (this.form.invalid || this.enviando()) {
+    this.form.markAllAsTouched();
+    return;
+  }
 
-    this.error.set('');
-    this.enviando.set(true);
-    this.authService
-      .registrarEstudiante(this.form.getRawValue())
-      .pipe(finalize(() => this.enviando.set(false)))
-      .subscribe({
-        next: () => void this.router.navigate(['/acceso'], { queryParams: { registrado: true } }),
-        error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
-      });
+  this.error.set('');
+  this.enviando.set(true);
+
+  this.authService
+    .registrarEstudiante(this.form.getRawValue())
+    .pipe(finalize(() => this.enviando.set(false)))
+    .subscribe({
+      next: () =>
+        void this.router.navigate(['/acceso'], {
+          queryParams: { registrado: true },
+        }),
+      error: (error: unknown) =>
+        this.error.set(obtenerMensajeError(error)),
+    });
   }
 }

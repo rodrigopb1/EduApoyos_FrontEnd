@@ -63,7 +63,7 @@
 
         <label class="field">
           <span>Número de documento</span>
-          <input formControlName="numeroDocumento" />
+          <input formControlName="numeroDocumento" (input)="soloNumeros($event)"/>
           @if (campoInvalido(form.controls.numeroDocumento)) {
             <small>{{
               mensajeCampo(form.controls.numeroDocumento, 'El número de documento')
