@@ -12,6 +12,9 @@
       @if (esAsesor()) {
         <span class="nav__label">Gestión</span>
         <a routerLink="/asesor/solicitudes" routerLinkActive="is-active">Solicitudes</a>
+        <a routerLink="/asesor/estudiantes" routerLinkActive="is-active">Estudiantes</a>
+        <a routerLink="/asesor/estudiantes/nuevo" routerLinkActive="is-active">Nuevo estudiante</a>
+        <a routerLink="/asesor/asesores/nuevo" routerLinkActive="is-active">Nuevo asesor</a>
       }
 
       @if (esEstudiante()) {

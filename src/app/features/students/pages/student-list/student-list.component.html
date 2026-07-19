@@ -1,0 +1,88 @@
+<header class="page-header page-header--actions">
+  <div>
+    <p class="eyebrow">Administración académica</p>
+    <h1>Estudiantes</h1>
+    <p>Consulte perfiles, información académica y solicitudes asociadas.</p>
+  </div>
+  <a class="button button--primary" routerLink="/asesor/estudiantes/nuevo">Nuevo estudiante</a>
+</header>
+
+<section class="card">
+  <div class="toolbar">
+    <label class="search-field">
+      <span class="sr-only">Buscar estudiante</span>
+      <input
+        type="search"
+        placeholder="Buscar por nombre, documento, correo o programa"
+        [value]="filtro()"
+        (input)="actualizarFiltro($event)"
+      />
+    </label>
+    <span class="toolbar__count">{{ estudiantesFiltrados().length }} registros</span>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert--error" role="alert">{{ error() }}</div>
+  }
+
+  @if (cargando()) {
+    <div class="empty-state">Cargando estudiantes…</div>
+  } @else if (estudiantesFiltrados().length === 0) {
+    <div class="empty-state">No se encontraron estudiantes.</div>
+  } @else {
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Estudiante</th>
+            <th>Documento</th>
+            <th>Programa</th>
+            <th>Semestre</th>
+            <th>Estado</th>
+            <th class="table-actions">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (estudiante of estudiantesFiltrados(); track estudiante.id) {
+            <tr>
+              <td>
+                <strong>{{ estudiante.nombreCompleto }}</strong>
+                <small>{{ estudiante.correoElectronico }}</small>
+              </td>
+              <td>
+                {{ nombreTipoDocumento(estudiante.tipoDocumento) }}
+                <small>{{ estudiante.numeroDocumento }}</small>
+              </td>
+              <td>{{ estudiante.programaAcademico }}</td>
+              <td>{{ estudiante.semestre }}</td>
+              <td>
+                <span
+                  [class]="
+                    estudiante.activo ? 'status status--approved' : 'status status--rejected'
+                  "
+                >
+                  {{ estudiante.activo ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="table-actions">
+                <a [routerLink]="['/asesor/estudiantes', estudiante.id, 'solicitudes']"
+                  >Solicitudes</a
+                >
+                <a [routerLink]="['/asesor/estudiantes', estudiante.id, 'editar']">Editar</a>
+                @if (estudiante.activo) {
+                  <button
+                    type="button"
+                    class="link-button link-button--danger"
+                    (click)="desactivar(estudiante)"
+                  >
+                    Desactivar
+                  </button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

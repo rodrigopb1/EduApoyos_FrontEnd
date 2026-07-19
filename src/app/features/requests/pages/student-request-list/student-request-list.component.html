@@ -1,36 +1,57 @@
 <header class="page-header page-header--actions">
   <div>
-    <p class="eyebrow">Portal del estudiante</p>
-    <h1>Mis solicitudes</h1>
-    <p>Consulte el estado de sus solicitudes de apoyo.</p>
+    <p class="eyebrow">{{ esAsesor ? 'Expediente del estudiante' : 'Mi portal' }}</p>
+    <h1>{{ estudiante()?.nombreCompleto || 'Mis solicitudes' }}</h1>
+    <p>
+      @if (estudiante()) {
+        {{ estudiante()!.programaAcademico }} · Semestre {{ estudiante()!.semestre }}
+      } @else {
+        Consulte el estado y el historial de sus apoyos educativos.
+      }
+    </p>
   </div>
-  <a class="button button--primary" routerLink="/estudiante/solicitudes/nueva">Nueva solicitud</a>
+  @if (esAsesor && id()) {
+    <a
+      class="button button--primary"
+      [routerLink]="['/asesor/estudiantes', id(), 'solicitudes', 'nueva']"
+    >
+      Nueva solicitud
+    </a>
+  } @else {
+    <a class="button button--primary" routerLink="/estudiante/solicitudes/nueva">Nueva solicitud</a>
+  }
 </header>
 
-@if (error()) {
-  <div class="alert alert--error" role="alert">{{ error() }}</div>
-}
+<section class="card">
+  @if (error()) {
+    <div class="alert alert--error" role="alert">{{ error() }}</div>
+  }
 
-@if (cargando()) {
-  <section class="card empty-state">Cargando solicitudes…</section>
-} @else if (solicitudes().length === 0) {
-  <section class="card empty-state">Aún no tiene solicitudes registradas.</section>
-} @else {
-  <section class="request-grid">
-    @for (solicitud of solicitudes(); track solicitud.id) {
-      <article class="card request-card">
-        <div class="request-card__header">
-          <span [class]="claseEstadoSolicitud(solicitud.estado)">
-            {{ nombreEstadoSolicitud(solicitud.estado) }}
-          </span>
-          <small>{{ solicitud.fechaCreacion | date: 'dd/MM/yyyy' }}</small>
-        </div>
-        <h2>{{ nombreTipoApoyo(solicitud.tipoApoyo) }}</h2>
-        <strong>{{
-          solicitud.montoSolicitado | currency: 'COP' : 'symbol-narrow' : '1.0-0'
-        }}</strong>
-        <a [routerLink]="['/solicitudes', solicitud.id]">Consultar detalle</a>
-      </article>
-    }
-  </section>
-}
+  @if (cargando()) {
+    <div class="empty-state">Cargando solicitudes…</div>
+  } @else if (solicitudes().length === 0) {
+    <div class="empty-state">
+      <strong>No hay solicitudes registradas.</strong>
+      <span>Utilice el botón “Nueva solicitud” para iniciar el proceso.</span>
+    </div>
+  } @else {
+    <div class="request-grid">
+      @for (solicitud of solicitudes(); track solicitud.id) {
+        <article class="request-card">
+          <div class="request-card__header">
+            <span [class]="claseEstadoSolicitud(solicitud.estado)">
+              {{ nombreEstadoSolicitud(solicitud.estado) }}
+            </span>
+            <small>{{ solicitud.fechaCreacion | date: 'dd/MM/yyyy' }}</small>
+          </div>
+          <h2>{{ nombreTipoApoyo(solicitud.tipoApoyo) }}</h2>
+          <p>{{ solicitud.montoSolicitado | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</p>
+          @if (esAsesor) {
+            <small>{{ solicitud.nombreEstudiante }}</small>
+          }
+          <a [routerLink]="['/solicitudes', solicitud.id]">Ver detalle</a>
+        </article>
+      }
+    </div>
+  }
+</section>

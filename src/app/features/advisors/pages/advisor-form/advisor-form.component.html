@@ -1,0 +1,49 @@
+<header class="page-header">
+  <div>
+    <p class="eyebrow">Administración de acceso</p>
+    <h1>Crear asesor</h1>
+    <p>El nuevo usuario podrá gestionar estudiantes y solicitudes.</p>
+  </div>
+</header>
+
+<section class="card form-card">
+  @if (error()) {
+    <div class="alert alert--error" role="alert">{{ error() }}</div>
+  }
+  @if (mensaje()) {
+    <div class="alert alert--success" role="status">{{ mensaje() }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid" novalidate>
+    <label class="field field--full">
+      <span>Nombre completo</span>
+      <input formControlName="nombreCompleto" autocomplete="off" />
+      @if (campoInvalido(form.controls.nombreCompleto)) {
+        <small>{{ mensajeCampo(form.controls.nombreCompleto, 'El nombre completo') }}</small>
+      }
+    </label>
+
+    <label class="field field--full">
+      <span>Correo electrónico</span>
+      <input type="email" formControlName="correoElectronico" autocomplete="off" />
+      @if (campoInvalido(form.controls.correoElectronico)) {
+        <small>{{ mensajeCampo(form.controls.correoElectronico, 'El correo electrónico') }}</small>
+      }
+    </label>
+
+    <label class="field field--full">
+      <span>Contraseña temporal</span>
+      <input type="password" formControlName="contrasena" autocomplete="new-password" />
+      <em>Incluya mayúscula, minúscula, número y carácter especial.</em>
+      @if (campoInvalido(form.controls.contrasena)) {
+        <small>{{ mensajeCampo(form.controls.contrasena, 'La contraseña') }}</small>
+      }
+    </label>
+
+    <div class="form-actions field--full">
+      <button class="button button--primary" type="submit" [disabled]="enviando()">
+        {{ enviando() ? 'Guardando…' : 'Crear asesor' }}
+      </button>
+    </div>
+  </form>
+</section>

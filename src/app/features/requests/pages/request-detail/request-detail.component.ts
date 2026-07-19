@@ -39,6 +39,7 @@ export class RequestDetailComponent implements OnInit {
   readonly solicitud = signal<SolicitudDetalleResponse | null>(null);
   readonly cargando = signal(true);
   readonly guardandoEstado = signal(false);
+  readonly descargando = signal(false);
   readonly error = signal('');
   readonly mensaje = signal('');
   readonly esAsesor = this.authService.tieneRol(ROLES.asesor);
@@ -88,6 +89,28 @@ export class RequestDetailComponent implements OnInit {
           this.mensaje.set('El estado fue actualizado correctamente.');
           this.estadoForm.controls.observacion.reset('');
           this.cargar();
+        },
+        error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
+      });
+  }
+
+  descargar(formato: 'texto' | 'html'): void {
+    if (this.descargando()) {
+      return;
+    }
+
+    this.descargando.set(true);
+    this.error.set('');
+    this.api
+      .descargarConstancia(this.id(), formato)
+      .pipe(finalize(() => this.descargando.set(false)))
+      .subscribe({
+        next: (archivo) => {
+          const enlace = document.createElement('a');
+          enlace.href = URL.createObjectURL(archivo);
+          enlace.download = `constancia-${this.id()}.${formato === 'html' ? 'html' : 'txt'}`;
+          enlace.click();
+          URL.revokeObjectURL(enlace.href);
         },
         error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
       });

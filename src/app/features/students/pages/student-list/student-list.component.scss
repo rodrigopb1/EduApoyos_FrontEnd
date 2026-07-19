@@ -1,0 +1,9 @@
+td strong,
+td small {
+  display: block;
+}
+
+td small {
+  margin-top: 0.2rem;
+  color: var(--text-muted);
+}

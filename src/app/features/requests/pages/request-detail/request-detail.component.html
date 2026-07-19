@@ -4,6 +4,24 @@
     <h1>Detalle de la solicitud</h1>
     <p>Consulte la información registrada y el historial de cambios.</p>
   </div>
+  <div class="header-actions">
+    <button
+      class="button button--secondary"
+      type="button"
+      (click)="descargar('texto')"
+      [disabled]="descargando()"
+    >
+      Descargar TXT
+    </button>
+    <button
+      class="button button--secondary"
+      type="button"
+      (click)="descargar('html')"
+      [disabled]="descargando()"
+    >
+      Descargar HTML
+    </button>
+  </div>
 </header>
 
 @if (error()) {
@@ -84,7 +102,7 @@
                 <small>{{ mensajeCampo(estadoForm.controls.observacion, 'La observación') }}</small>
               }
             </label>
-            <br/>
+
             <button
               class="button button--primary button--block"
               type="submit"

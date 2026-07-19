@@ -1,0 +1,89 @@
+<header class="page-header">
+  <div>
+    <p class="eyebrow">Administración académica</p>
+    <h1>{{ editando ? 'Editar estudiante' : 'Nuevo estudiante' }}</h1>
+    <p>
+      {{
+        editando
+          ? 'Actualice la información académica del perfil.'
+          : 'Cree el usuario y su perfil de estudiante.'
+      }}
+    </p>
+  </div>
+</header>
+
+<section class="card form-card">
+  @if (error()) {
+    <div class="alert alert--error" role="alert">{{ error() }}</div>
+  }
+  @if (cargando()) {
+    <div class="empty-state">Cargando información…</div>
+  } @else {
+    <form class="form-grid" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+      <label class="field field--full">
+        <span>Nombre completo</span>
+        <input formControlName="nombreCompleto" />
+        @if (campoInvalido(form.controls.nombreCompleto)) {
+          <small>{{ mensajeCampo(form.controls.nombreCompleto, 'El nombre completo') }}</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Correo electrónico</span>
+        <input type="email" formControlName="correoElectronico" />
+        @if (campoInvalido(form.controls.correoElectronico)) {
+          <small>{{
+            mensajeCampo(form.controls.correoElectronico, 'El correo electrónico')
+          }}</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Contraseña inicial</span>
+        <input type="password" formControlName="contrasena" autocomplete="new-password" />
+        @if (campoInvalido(form.controls.contrasena)) {
+          <small>{{ mensajeCampo(form.controls.contrasena, 'La contraseña') }}</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Tipo de documento</span>
+        <select formControlName="tipoDocumento">
+          @for (tipo of tiposDocumento; track tipo.value) {
+            <option [value]="tipo.value">{{ tipo.label }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Número de documento</span>
+        <input formControlName="numeroDocumento" />
+        @if (campoInvalido(form.controls.numeroDocumento)) {
+          <small>{{ mensajeCampo(form.controls.numeroDocumento, 'El número de documento') }}</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Programa académico</span>
+        <input formControlName="programaAcademico" />
+        @if (campoInvalido(form.controls.programaAcademico)) {
+          <small>{{
+            mensajeCampo(form.controls.programaAcademico, 'El programa académico')
+          }}</small>
+        }
+      </label>
+
+      <label class="field">
+        <span>Semestre</span>
+        <input type="number" min="1" max="10" formControlName="semestre" />
+      </label>
+
+      <div class="form-actions field--full">
+        <a class="button button--secondary" routerLink="/asesor/estudiantes">Cancelar</a>
+        <button class="button button--primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando…' : 'Guardar estudiante' }}
+        </button>
+      </div>
+    </form>
+  }
+</section>
