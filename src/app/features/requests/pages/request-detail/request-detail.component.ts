@@ -1,13 +1,5 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component,  computed, inject, input, OnInit, signal,} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -42,6 +34,7 @@ export class RequestDetailComponent implements OnInit {
   readonly descargando = signal(false);
   readonly error = signal('');
   readonly mensaje = signal('');
+
   readonly esAsesor = this.authService.tieneRol(ROLES.asesor);
   readonly nombreEstadoSolicitud = nombreEstadoSolicitud;
   readonly nombreTipoApoyo = nombreTipoApoyo;
@@ -52,12 +45,13 @@ export class RequestDetailComponent implements OnInit {
   readonly estadosDisponibles = computed(() => {
     switch (this.solicitud()?.estado) {
       case EstadoSolicitud.Pendiente:
-        return [{ value: EstadoSolicitud.EnRevision, label: 'En revisión' }];
+         return [{ value: EstadoSolicitud.EnRevision, label: 'En revisión' }];
       case EstadoSolicitud.EnRevision:
         return [
           { value: EstadoSolicitud.Aprobada, label: 'Aprobada' },
           { value: EstadoSolicitud.Rechazada, label: 'Rechazada' },
         ];
+
       default:
         return [];
     }
@@ -78,11 +72,25 @@ export class RequestDetailComponent implements OnInit {
       return;
     }
 
+    const valores = this.estadoForm.getRawValue();
+    const estadoNumerico = Number(valores.estado);
+
+    if (!Number.isInteger(estadoNumerico)) {
+      this.error.set('Seleccione un estado válido.');
+      return;
+    }
+
+    const request = {
+      estado: estadoNumerico as EstadoSolicitud,
+      observacion: valores.observacion.trim(),
+    };
+
     this.error.set('');
     this.mensaje.set('');
     this.guardandoEstado.set(true);
+
     this.api
-      .cambiarEstado(this.id(), this.estadoForm.getRawValue())
+      .cambiarEstado(this.id(), request)
       .pipe(finalize(() => this.guardandoEstado.set(false)))
       .subscribe({
         next: () => {
@@ -101,36 +109,42 @@ export class RequestDetailComponent implements OnInit {
 
     this.descargando.set(true);
     this.error.set('');
+
     this.api
       .descargarConstancia(this.id(), formato)
       .pipe(finalize(() => this.descargando.set(false)))
       .subscribe({
         next: (archivo) => {
           const enlace = document.createElement('a');
+
           enlace.href = URL.createObjectURL(archivo);
           enlace.download = `constancia-${this.id()}.${formato === 'html' ? 'html' : 'txt'}`;
+
           enlace.click();
           URL.revokeObjectURL(enlace.href);
         },
-        error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
+       error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
       });
   }
 
   private cargar(): void {
     this.cargando.set(true);
     this.error.set('');
+
     this.api
       .obtener(this.id())
       .pipe(finalize(() => this.cargando.set(false)))
       .subscribe({
         next: (solicitud) => {
           this.solicitud.set(solicitud);
+
           const primerEstado = this.estadosDisponibles()[0]?.value;
-          if (primerEstado) {
+
+          if (primerEstado !== undefined) {
             this.estadoForm.controls.estado.setValue(primerEstado);
           }
         },
-        error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
+         error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
       });
   }
 }
