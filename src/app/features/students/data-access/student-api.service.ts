@@ -35,4 +35,8 @@ export class StudentApiService {
   desactivar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiBaseUrl}/estudiantes/${id}`);
   }
+
+  activar(id: string): Observable<void> {
+    return this.http.patch<void>(`${this.apiBaseUrl}/estudiantes/${id}/activar`, {});
+  }
 }

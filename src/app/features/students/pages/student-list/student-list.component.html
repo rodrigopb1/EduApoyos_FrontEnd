@@ -72,10 +72,20 @@
                 @if (estudiante.activo) {
                   <button
                     type="button"
-                    class="link-button link-button--danger"
+                    class="link-button"
+                    style="color: #dc2626;"
                     (click)="desactivar(estudiante)"
                   >
                     Desactivar
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="link-button"
+                    style="color: #16a34a;"
+                    (click)="activar(estudiante)"
+                  >
+                    Activar
                   </button>
                 }
               </td>

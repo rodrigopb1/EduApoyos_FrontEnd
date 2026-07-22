@@ -71,4 +71,24 @@ export class StudentListComponent {
       error: (error: unknown) => this.error.set(obtenerMensajeError(error)),
     });
   }
+
+activar(estudiante: EstudianteResponse): void {
+  if (estudiante.activo || !confirm(`¿Desea activar nuevamente a ${estudiante.nombreCompleto}?`)) {
+    return;
+  }
+
+  this.api.activar(estudiante.id).subscribe({
+    next: () =>
+      this.estudiantes.update((items) =>
+        items.map((item) =>
+          item.id === estudiante.id
+            ? { ...item, activo: true }
+            : item
+        ),
+      ),
+    error: (error: unknown) =>
+      this.error.set(obtenerMensajeError(error)),
+  });
+}
+
 }
