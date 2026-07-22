@@ -37,7 +37,7 @@ export class RequestApiService {
   }
 
   listarPropias(): Observable<SolicitudResponse[]> {
-    return this.http.get<SolicitudResponse[]>(`${this.apiBaseUrl}/portal-estudiante/solicitudes`);
+    return this.http.get<SolicitudResponse[]>(`${this.apiBaseUrl}/portalEstudiante/solicitudes`);
   }
 
   listarPorEstudiante(estudianteId: string): Observable<SolicitudResponse[]> {
