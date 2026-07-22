@@ -52,6 +52,27 @@ export class StudentFormComponent {
     });
   }
 
+  readonly programasAcademicos = [
+  'Administración de Empresas',
+  'Contaduría Pública',
+  'Derecho',
+  'Ingeniería de Sistemas',
+  'Ingeniería Industrial',
+  'Psicología',
+  'Trabajo Social',
+  ];
+
+  soloNumeros(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  const valorLimpio = input.value.replace(/[^0-9]/g, '');
+
+  input.value = valorLimpio;
+
+  this.form.controls.numeroDocumento.setValue(valorLimpio, {
+    emitEvent: false,
+  });
+}
+
   get editando(): boolean {
     return Boolean(this.id());
   }

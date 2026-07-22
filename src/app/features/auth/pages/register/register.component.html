@@ -71,15 +71,25 @@
           }
         </label>
 
-        <label class="field">
-          <span>Programa académico</span>
-          <input formControlName="programaAcademico" />
-          @if (campoInvalido(form.controls.programaAcademico)) {
-            <small>{{
-              mensajeCampo(form.controls.programaAcademico, 'El programa académico')
-            }}</small>
+         <label class="field">
+        <span>Programa académico</span>
+          
+        <select formControlName="programaAcademico">
+          <option value="" disabled>Seleccione un programa académico</option>
+        
+          @for (programa of programasAcademicos; track programa) {
+            <option [value]="programa">
+              {{ programa }}
+            </option>
           }
-        </label>
+        </select>
+      
+        @if (campoInvalido(form.controls.programaAcademico)) {
+          <small>{{
+            mensajeCampo(form.controls.programaAcademico, 'El programa académico')
+          }}</small>
+        }
+      </label>
 
         <label class="field">
           <span>Semestre</span>

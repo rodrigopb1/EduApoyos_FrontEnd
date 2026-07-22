@@ -57,15 +57,25 @@
 
       <label class="field">
         <span>Número de documento</span>
-        <input formControlName="numeroDocumento" />
+        <input formControlName="numeroDocumento" (input)="soloNumeros($event)"/>
         @if (campoInvalido(form.controls.numeroDocumento)) {
           <small>{{ mensajeCampo(form.controls.numeroDocumento, 'El número de documento') }}</small>
         }
       </label>
 
-      <label class="field">
+     <label class="field">
         <span>Programa académico</span>
-        <input formControlName="programaAcademico" />
+
+        <select formControlName="programaAcademico">
+          <option value="" disabled>Seleccione un programa académico</option>
+        
+          @for (programa of programasAcademicos; track programa) {
+            <option [value]="programa">
+              {{ programa }}
+            </option>
+          }
+        </select>
+      
         @if (campoInvalido(form.controls.programaAcademico)) {
           <small>{{
             mensajeCampo(form.controls.programaAcademico, 'El programa académico')
